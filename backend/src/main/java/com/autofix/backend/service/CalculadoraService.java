@@ -1,5 +1,6 @@
 package com.autofix.backend.service;
 
+import com.autofix.backend.dto.CalculoReparacionDTO;
 import com.autofix.backend.entities.Vehiculo;
 import com.autofix.backend.entities.Reparacion;
 
@@ -31,7 +32,7 @@ public class CalculadoraService {
     // ------------------------
 
     // Definir los porcentajes de descuento del dctoNumeroReparaciones
-    private final BigDecimal[][] descuentosNumeroReparaciones = {
+    BigDecimal[][] descuentosNumeroReparaciones = {
             {BigDecimal.valueOf(0.05), BigDecimal.valueOf(0.07), BigDecimal.valueOf(0.10), BigDecimal.valueOf(0.08)}, // 1 - 2 Reparaciones
             {BigDecimal.valueOf(0.10), BigDecimal.valueOf(0.12), BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.13)}, // 3 - 5 Reparaciones
             {BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.17), BigDecimal.valueOf(0.20), BigDecimal.valueOf(0.18)}, // 6 - 9 Reparaciones
@@ -39,12 +40,12 @@ public class CalculadoraService {
     };
 
     // Método auxiliar para obtener el descuento de la matriz de descuentos
-    private BigDecimal getDescuentoNumeroReparaciones(int fila, String tipoMotor) {
+    BigDecimal getDescuentoNumeroReparaciones(int fila, String tipoMotor) {
         int columna = switch (tipoMotor) {
             case "Gasolina" -> 0;
-            case "Diésel" -> 1;
-            case "Híbrido" -> 2;
-            case "Eléctrico" -> 3;
+            case "Diesel" -> 1;
+            case "Hibrido" -> 2;
+            case "Electrico" -> 3;
             default -> throw new IllegalArgumentException("Tipo de motor no válido: " + tipoMotor);
         };
         return descuentosNumeroReparaciones[fila][columna];
@@ -52,8 +53,7 @@ public class CalculadoraService {
 
     // Metodo para obtener el descuento por el numero de reparaciones
     public BigDecimal dctoNumeroReparaciones(Vehiculo vehiculo) {
-        // int numeroReparaciones = reparacionRepository.countByVehiculoPatente(vehiculo.getNumeroPatente());
-        int numeroReparaciones = 0 ; // to do quitar esta linea
+        int numeroReparaciones = reparacionRepository.getNumeroReparacionesByVehiculoId(vehiculo.getId());
         String tipoMotor = vehiculo.getTipoMotor();
         BigDecimal porcentajeDescuento = BigDecimal.ZERO;
 
@@ -107,7 +107,7 @@ public class CalculadoraService {
     // Método auxiliar para obtener el descuento de la matriz de descuentos
     private BigDecimal getRecargoKilometrajeVehiculo(int fila, String tipoVehiculo) {
         int columna = switch (tipoVehiculo) {
-            case "Sedán" -> 0;
+            case "Sedan" -> 0;
             case "Hatchback" -> 1;
             case "SUV" -> 2;
             case "Pickup" -> 3;
@@ -150,7 +150,7 @@ public class CalculadoraService {
     // Método auxiliar para obtener el descuento de la matriz de descuentos
     private BigDecimal getRecargoAntiguedadVehiculo(int fila, String tipoVehiculo) {
         int columna = switch (tipoVehiculo) {
-            case "Sedán" -> 0;
+            case "Sedan" -> 0;
             case "Hatchback" -> 1;
             case "SUV" -> 2;
             case "Pickup" -> 3;

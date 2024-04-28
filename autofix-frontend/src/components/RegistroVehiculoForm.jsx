@@ -106,7 +106,7 @@ export default function RegistroVehiculoForm(){
                 onChange={(e) => setTipo(e.target.value)}
                 required
             >
-                <MenuItem value="Sedan">Sedan</MenuItem>
+                <MenuItem value="Sedan">Sedán</MenuItem>
                 <MenuItem value="Hatchback">Hatchback</MenuItem>
                 <MenuItem value="SUV">SUV</MenuItem>
                 <MenuItem value="Pickup">Pickup</MenuItem>

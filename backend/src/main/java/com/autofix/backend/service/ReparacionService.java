@@ -23,4 +23,9 @@ public class ReparacionService {
     public List<Reparacion> obtenerTodasLasReparaciones() {
         return reparacionRepository.findAll();
     }
+
+    // create a Reparacion getReparacionById
+    public Reparacion getReparacionById(Long reparacionId) {
+        return reparacionRepository.findById(reparacionId).orElse(null);
+    }
 }

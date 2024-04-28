@@ -1,5 +1,5 @@
 import{ useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import gestionReparacion from '../services/reparacion.service';
 
 
@@ -24,28 +24,39 @@ export default function ReparacionList(){
         fetchReparaciones();
     }, []);
 
-    
     return (
-        <TableContainer>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Fecha Ingreso</TableCell>
-                        <TableCell>Hora Ingreso</TableCell>
-                        <TableCell>Tipo Reparacion</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {reparaciones.map((reparacion) => (
-                        <TableRow key={reparacion.id}>
-                            <TableCell>{reparacion.fechaIngreso}</TableCell>
-                            <TableCell>{reparacion.horaIngreso}</TableCell>
-                            <TableCell>{reparacion.tipoReparacion}</TableCell>
+        <Grid container direction="column" spacing={2}>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><b>Fecha Ingreso</b></TableCell>
+                            <TableCell><b>Hora Ingreso</b></TableCell>
+                            <TableCell><b>Tipo de reparación</b></TableCell>
+                            <TableCell><b>Monto total de la reparación</b></TableCell>
+                            <TableCell><b>Fecha de salida de la reparación</b></TableCell>
+                            <TableCell><b>Hora de salida de la reparación</b></TableCell>
+                            <TableCell><b>Fecha en que el cliente se llevó el vehículo</b></TableCell>
+                            <TableCell><b>Hora en que el cliente se llevó el vehículo</b></TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {reparaciones.map((reparacion) => (
+                            <TableRow key={reparacion.id}>
+                                <TableCell>{reparacion.fechaIngreso}</TableCell>
+                                <TableCell>{reparacion.horaIngreso}</TableCell>
+                                <TableCell>{reparacion.tipoReparacion}</TableCell>
+                                <TableCell>{reparacion.montoTotal}</TableCell>
+                                <TableCell>{reparacion.fechaSalida}</TableCell>
+                                <TableCell>{reparacion.horaSalida}</TableCell>
+                                <TableCell>{reparacion.fechaEntregaCliente}</TableCell>
+                                <TableCell>{reparacion.horaEntregaCliente}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Grid>
     );
 }
 

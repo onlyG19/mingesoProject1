@@ -3,6 +3,7 @@ import{ useEffect, useState } from 'react';
 import { Select,FormControl, Button, Grid, Typography, TextField, InputLabel, MenuItem } from "@mui/material";
 import gestionReparacion from '../services/reparacion.service'
 import gestionVehiculo from '../services/vehiculos.service'
+import listaReparaciones from '../services/listaReparaciones';
 
 
 export default function RegistroReparacionForm(){
@@ -139,20 +140,30 @@ export default function RegistroReparacionForm(){
 
                 <Grid item>
                     <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label"> Tipo Reparacion *</InputLabel>
 
-                        <TextField
+                        <Select
                             required
                             id="tipoReparacion"
                             label="Tipo de Reparación"
                             value={tipoReparacion}
                             onChange={(e) => setTipoReparacion(e.target.value)}
-                        />
+                        >
+                            {listaReparaciones.length > 0 ? (
+                                listaReparaciones.map((reparacion) => (
+                                    <MenuItem key={reparacion.id} value={reparacion.id}>#{reparacion.id} {reparacion.name}</MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No hay opciones disponibles</MenuItem>
+                            )}
+                            
+                        </Select>
                     </FormControl>
                 </Grid>
 
                 <Grid item>
                     <FormControl fullWidth>
-
+                        
                         <TextField
                             required
                             id="montoTotal"
