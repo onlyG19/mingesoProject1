@@ -3,7 +3,7 @@ import{ useEffect, useState } from 'react';
 import { Select,FormControl, Button, Grid, Typography, TextField, InputLabel, MenuItem } from "@mui/material";
 import gestionReparacion from '../services/reparacion.service'
 import gestionVehiculo from '../services/vehiculos.service'
-import listaReparaciones from '../services/listaReparaciones';
+import {listaReparaciones} from '../services/listaReparaciones';
 
 
 export default function RegistroReparacionForm(){

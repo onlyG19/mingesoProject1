@@ -1,8 +1,7 @@
 import{ useEffect, useState } from 'react';
 import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import gestionReparacion from '../services/reparacion.service';
-
-
+import { getReparacionNameById} from '../services/listaReparaciones'; // Asegúrate de reemplazar 'ruta/a/listaReparaciones' con la ruta correcta a tu archivo listaReparaciones.js.
 
 
 export default function ReparacionList(){
@@ -45,7 +44,7 @@ export default function ReparacionList(){
                             <TableRow key={reparacion.id}>
                                 <TableCell>{reparacion.fechaIngreso}</TableCell>
                                 <TableCell>{reparacion.horaIngreso}</TableCell>
-                                <TableCell>{reparacion.tipoReparacion}</TableCell>
+                                <TableCell>{getReparacionNameById(parseInt(reparacion.tipoReparacion))}</TableCell>
                                 <TableCell>{reparacion.montoTotal}</TableCell>
                                 <TableCell>{reparacion.fechaSalida}</TableCell>
                                 <TableCell>{reparacion.horaSalida}</TableCell>

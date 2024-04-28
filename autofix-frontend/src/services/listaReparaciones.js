@@ -1,4 +1,3 @@
-
 const listaReparaciones = [
     { id: 1, name: "Reparaciones del Sistema de Frenos" },
     { id: 2, name: "Servicio del Sistema de Refrigeración" },
@@ -14,4 +13,9 @@ const listaReparaciones = [
     // Add more types of repairs as needed
 ];
 
-export default listaReparaciones;
+function getReparacionNameById(id) {
+    const reparacion = listaReparaciones.find(reparacion => reparacion.id === id);
+    return reparacion ? reparacion.name : null;
+}
+
+export { getReparacionNameById, listaReparaciones };
