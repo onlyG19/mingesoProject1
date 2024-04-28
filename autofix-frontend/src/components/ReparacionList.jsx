@@ -1,5 +1,5 @@
 import{ useEffect, useState } from 'react';
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Paper, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import gestionReparacion from '../services/reparacion.service';
 import { getReparacionNameById} from '../services/listaReparaciones'; // Asegúrate de reemplazar 'ruta/a/listaReparaciones' con la ruta correcta a tu archivo listaReparaciones.js.
 
@@ -25,7 +25,7 @@ export default function ReparacionList(){
 
     return (
         <Grid container direction="column" spacing={2}>
-            <TableContainer>
+            <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
