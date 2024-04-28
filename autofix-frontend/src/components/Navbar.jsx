@@ -12,7 +12,7 @@ const Navbar = () => {
                 <Toolbar sx={{ justifyContent: 'flex-end' }}>
                     <Button color="inherit" component={Link} to="/home">Inicio</Button>
                     <Button color="inherit" component={Link} to="/vehiculos/crear">Registrar Vehiculos</Button>
-                    <Button color="inherit" component={Link} to="/registrar-reparacion">Registrar Reparacion</Button>
+                    <Button color="inherit" component={Link} to="/reparaciones/crear">Registrar Reparacion</Button>
                     <Button color="inherit" component={Link} to="/historial-reparaciones">Historial de Reparaciones</Button>
                     <Button color="inherit" component={Link} to="/reportes">Reportes</Button>
                 </Toolbar>

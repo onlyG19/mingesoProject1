@@ -1,5 +1,5 @@
 import{ useState } from 'react';
-import { InputLabel,Select, MenuItem, TextField, Button, Grid,Typography, FormControl, Menu } from '@mui/material';
+import { InputLabel,Select, MenuItem, TextField, Button, Grid,Typography, FormControl } from '@mui/material';
 import gestionVehiculos from '../services/vehiculos.service.js'
 
 
@@ -101,7 +101,6 @@ export default function RegistroVehiculoForm(){
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label"> Tipo Vehiculo *</InputLabel>
             <Select
-                select
                 label="Tipo Vehiculo"                    
                 value={tipo}
                 onChange={(e) => setTipo(e.target.value)}
@@ -137,7 +136,6 @@ export default function RegistroVehiculoForm(){
 
                 <InputLabel id="demo-simple-select-label"> Tipo de Motor *</InputLabel>
                 <Select
-                    select
                     label="Tipo de motor"
                     value={tipoMotor}
                     onChange={(e) => setTipoMotor(e.target.value)}
