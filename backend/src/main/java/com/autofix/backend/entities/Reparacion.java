@@ -19,7 +19,7 @@ import java.time.LocalTime;
 public class Reparacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id_reparacion;
     private LocalDate fechaIngreso;
     private LocalTime horaIngreso;
     private String tipoReparacion;

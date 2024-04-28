@@ -26,6 +26,34 @@ public class CalculadoraService {
         this.vehiculoRepository = vehiculoRepository;
         this.reparacionRepository = reparacionRepository;
     }
+    // Tabla de precios de reparaciones
+    private final int[][] matrixPreciosReparaciones = {
+            {120000,120000,180000,220000}, // # Reparacion de id 1
+            {130000,130000,190000,230000}, // # Reparacion de id 2
+            {350000,450000,700000,800000}, // # Reparacion de id 3
+            {150000,150000,200000,250000}, // # Reparacion de id 4
+            {100000,120000,450000,0}, // # Reparacion de id 5
+            {100000,120000,450000,0}, // # Reparacion de id 6
+            {100000,100000,100000,100000}, // # Reparacion de id 7
+            {180000,180000,210000,250000}, // # Reparacion de id 8
+            {150000,150000,180000,180000}, // # Reparacion de id 9
+            {130000,140000,220000,0}, // # Reparacion de id 10
+            {80000,80000,80000,80000} // # Reparacion de id 11
+    };
+
+    // Método auxiliar para obtener el descuento de la matriz de descuentos
+    int getPrecioReparacion(int id_reparacion, String tipoMotor) {
+        int columna = switch (tipoMotor) {
+            case "Gasolina" -> 0;
+            case "Diesel" -> 1;
+            case "Hibrido" -> 2;
+            case "Electrico" -> 3;
+            default -> throw new IllegalArgumentException("Tipo de motor no válido: " + tipoMotor);
+        };
+        return matrixPreciosReparaciones[id_reparacion-1][columna];
+    }
+
+
 
     // ------------------------
     // Descuentos por numero de Reparaciones
@@ -194,4 +222,60 @@ public class CalculadoraService {
         }
         return recargo;
     }
+
+    // create a method to calculate the total amount of the repair
+    public CalculoReparacionDTO calcularReparacion(Reparacion reparacion) {
+        Vehiculo vehiculo = vehiculoRepository.findById(reparacion.getIdVehiculo()).orElse(null);
+        if (vehiculo == null) {
+            throw new IllegalArgumentException("Vehiculo no encontrado");
+        }
+
+        BigDecimal dctoNumeroReparaciones = dctoNumeroReparaciones(vehiculo);
+        System.out.println("Descuento por numero de reparaciones: %" + dctoNumeroReparaciones);
+
+
+        BigDecimal recargoPorAntiguedad = recargoPorAntiguedad(vehiculo.getYearFabricacion(), vehiculo.getTipo());
+        System.out.println("Recargo por antiguedad: %" + recargoPorAntiguedad);
+
+        // TODO Debug el retraso en la recogida del vehiculo, se requiere de un monto total de la reparacion para determinar este recargo
+        BigDecimal recargoPorRetrasoRecogida = recargoRetrasoRecogidaVehiculo(reparacion.getFechaEntregaCliente(), LocalDate.now(), reparacion.getMontoTotal());
+        System.out.println("Recargo por retraso en la recogida: $" + recargoPorRetrasoRecogida);
+
+
+        BigDecimal dctoPorDiaAtencion = dctoPorDiaAtencion(reparacion);
+        System.out.println("Descuento por dia de atencion: $" + dctoPorDiaAtencion);
+
+
+        BigDecimal recargoKilometrajeVehiculo = recargoKilometrajeVehiculo(vehiculo.getKilometraje(), vehiculo.getTipo());
+        System.out.println("Recargo por kilometraje del vehiculo: %" + recargoKilometrajeVehiculo);
+
+        BigDecimal montoReparacion = BigDecimal.valueOf(getPrecioReparacion(Integer.parseInt(reparacion.getTipoReparacion()), vehiculo.getTipoMotor()));
+        System.out.println("Monto de la reparacion: $" + montoReparacion);
+
+
+        BigDecimal sumaRecargosPorcentajeTotales = recargoPorAntiguedad.add(recargoKilometrajeVehiculo);
+        BigDecimal sumaDescuentosPorcentajeTotales = dctoNumeroReparaciones;
+
+
+
+        System.out.println("Suma recargos totales: %" + sumaRecargosPorcentajeTotales);
+
+         // No se esta contemplando el descuento del bono, TODO: Agregar el descuento del bono
+        System.out.println("Suma descuentos totales: % " + sumaDescuentosPorcentajeTotales);
+
+        BigDecimal montoFinalCobro = montoReparacion.add((montoReparacion.multiply(sumaRecargosPorcentajeTotales)).add(recargoPorRetrasoRecogida)).subtract(montoReparacion.multiply(sumaDescuentosPorcentajeTotales).add(dctoPorDiaAtencion));
+        System.out.println("Monto final de cobro: $" + montoFinalCobro);
+
+        // now edit the actual reparacion param to set the new value of montofinalcobro has the montoTotal attribute
+        reparacion.setMontoTotal(montoFinalCobro);
+
+        return new CalculoReparacionDTO(dctoNumeroReparaciones, recargoPorAntiguedad, recargoPorRetrasoRecogida, dctoPorDiaAtencion, recargoKilometrajeVehiculo, montoReparacion, montoFinalCobro, reparacion.getId_reparacion());
+    }
+
+
+
+
+
+
+
 }
