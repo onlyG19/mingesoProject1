@@ -26,6 +26,10 @@ public class ReportController {
     public List<Map<String, Object>> getReport2Data() {
         return reportService.getReport2Data();
     }
+    @GetMapping("/3")
+    public List<Map<String, Object>> getReport3Data() {
+        return reportService.getReport3Data();
+    }
 
     @GetMapping("/4")
     public List<Map<String, Object>> getReport4Data() {

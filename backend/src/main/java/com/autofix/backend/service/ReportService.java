@@ -43,6 +43,21 @@ public class ReportService {
 
     }
 
+    public List<Map<String, Object>> getReport3Data() {
+        String sqlQuery = "SELECT " +
+                "v.marca AS marca, " +
+                "CAST(AVG(r.fecha_salida - r.fecha_ingreso) AS INTEGER) AS tiempo_promedio_reparacion " +
+                "FROM " +
+                "reparacion r " +
+                "INNER JOIN " +
+                "vehiculo v ON r.id_vehiculo = v.id " +
+                "GROUP BY " +
+                "v.marca " +
+                "ORDER BY " +
+                "tiempo_promedio_reparacion ASC;";
+        return jdbcTemplate.queryForList(sqlQuery);
+    }
+
     public List<Map<String, Object>> getReport4Data() {
         String sqlQuery = "SELECT " +
                 "tipo_reparacion AS tipo_reparacion, " +

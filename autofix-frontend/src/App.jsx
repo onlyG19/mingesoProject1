@@ -9,6 +9,7 @@ import ReparacionList from './components/ReparacionList'
 import { Box } from '@mui/material';
 import ReporteDos from './components/ReporteDos'
 import ReporteCuatro from './components/ReporteCuatro'
+import ReporteTres from './components/ReporteTres'
 
 
 function App(){
@@ -24,6 +25,7 @@ function App(){
             <Route path="/reparaciones/crear" element={<RegistroReparacionForm/>} />
             <Route path="/reparaciones" element={<ReparacionList/>} />
             <Route path="/reportes/2" element={<ReporteDos/>} />
+            <Route path="/reportes/3" element={<ReporteTres/>} />
             <Route path="/reportes/4" element={<ReporteCuatro/>} />
 
         </Routes>

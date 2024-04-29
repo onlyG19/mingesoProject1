@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Grid,Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Typography,Grid,Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import gestionReporteria from '../services/reporteria.service';
 import { getReparacionNameById} from '../services/listaReparaciones'; // Asegúrate de reemplazar 'ruta/a/listaReparaciones' con la ruta correcta a tu archivo listaReparaciones.js.
 
@@ -29,6 +29,11 @@ const ReporteCuatro = () => {
 
     return (
         <Grid container direction="column" spacing={2}>
+            <Grid item > 
+                <Typography variant="h2" component="h2" sx={{ marginBottom: '76px',marginTop: '16px' }}>
+                Reporte 4: Monto total de reparaciones por tipo de motor y tipo de reparación
+                </Typography>
+            </Grid>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead>
