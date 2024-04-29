@@ -19,6 +19,7 @@ function App(){
       <Box mt={8}> 
       {/* listado de rutas */}
         <Routes>
+            <Route path="/" element={<Home/>} />
             <Route path="/home" element={<Home/>} />
             <Route path="/vehiculos/crear" element={<RegistroVehiculoForm/>} />
             <Route path="/vehiculos" element={<ReparacionList/>} /> 

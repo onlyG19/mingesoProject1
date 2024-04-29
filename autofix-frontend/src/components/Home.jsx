@@ -1,8 +1,17 @@
+import { Typography } from '@mui/material';
+
 const Home = () => {
     return (
         <div>
-            <h1>Autofix: Sistema de Reparacion de Vehiculos</h1>
-            <p>Tu auto en las mejores manos.</p>
+
+        
+        <Typography variant="h2" component="h2" sx={{ marginBottom: '76px',marginTop: '16px' }}>
+            Autofix: Sistema de Reparacion de Vehiculos
+        </Typography>
+
+        <Typography variant="h4" component="p" sx={{ marginBottom: '76px',marginTop: '16px' }}>
+            Tu auto en las mejores manos
+        </Typography>
         </div>
     );
 };

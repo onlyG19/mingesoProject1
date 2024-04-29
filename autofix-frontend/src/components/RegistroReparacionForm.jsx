@@ -19,6 +19,8 @@ export default function RegistroReparacionForm(){
     const [horaEntregaCliente, setHoraEntregaCliente] = useState('');
 
     const [vehiculos, setVehiculos] = useState([]);
+    const [loading, setLoading] = useState(false);
+
 
     async function fetchVehiculosDisponibles(){
         try {
@@ -55,7 +57,6 @@ export default function RegistroReparacionForm(){
             });
             console.log('Respuesta del servidor:', response.data);
 
-            setVehiculos(null);
             setIdVehiculo('');
             setFechaIngreso('');
             setHoraIngreso('');
@@ -67,11 +68,39 @@ export default function RegistroReparacionForm(){
             setHoraEntregaCliente('');
 
 
-            alert('Vehículo registrado con éxito.');
+            alert('Reparacion registrado con éxito.');
 
         } catch (error) {
             console.error('Error al enviar la solicitud:', error);
             alert('Error al registrar la reparacion. Por favor, inténtelo de nuevo.');
+        }
+    };
+
+    const handleCalculate = async () => {
+            // Validar los campos necesarios
+        if (!fechaIngreso || !horaIngreso || !tipoReparacion || !fechaSalida || !horaSalida || !fechaEntregaCliente || !horaEntregaCliente || !idVehiculo) {
+            alert('Por favor, complete todos los campos necesarios antes de calcular el monto.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            // Reemplaza esto con la llamada a tu servicio de backend.
+            const response = await gestionReparacion.calcularMonto({
+                fechaIngreso,
+                horaIngreso,
+                tipoReparacion,
+                fechaSalida,
+                horaSalida,
+                fechaEntregaCliente,
+                horaEntregaCliente,
+                idVehiculo,
+            });
+            setMontoTotal(response.data.monto);
+        } catch (error) {
+            console.error('Error al calcular el monto:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -93,7 +122,7 @@ export default function RegistroReparacionForm(){
                     >
                         {
                             vehiculos.map((vehiculo) => (
-                                <MenuItem key={vehiculo.id} value={vehiculo.id}>Marca: {vehiculo.marca} | Modelo: {vehiculo.modelo} | Patente: {vehiculo.numeroPatente} </MenuItem>
+                                <MenuItem key={vehiculo.id} value={vehiculo.id}><b>Marca: </b> {vehiculo.marca} ,   <b>Modelo: </b>{vehiculo.modelo} ,  <b>Patente: </b> {vehiculo.numeroPatente} </MenuItem>
                             ))
                         }
                     </Select>
@@ -171,7 +200,12 @@ export default function RegistroReparacionForm(){
                             type="number"
                             value={montoTotal}
                             onChange={(e) => setMontoTotal(e.target.value)}
+                            disabled
                         />
+                        <Button variant="contained" onClick={handleCalculate} disabled={loading}>
+                            Calcular Monto
+                        </Button>
+
                     </FormControl>
                 </Grid>
 
