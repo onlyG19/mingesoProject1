@@ -42,4 +42,27 @@ public class ReportService {
         return jdbcTemplate.queryForList(sqlQuery);
 
     }
+
+    public List<Map<String, Object>> getReport4Data() {
+        String sqlQuery = "SELECT " +
+                "tipo_reparacion AS tipo_reparacion, " +
+                "SUM(CASE WHEN tipo_motor = 'Gasolina' THEN 1 ELSE 0 END) AS Gasolina, " +
+                "SUM(CASE WHEN tipo_motor = 'Diesel' THEN 1 ELSE 0 END) AS Diesel, " +
+                "SUM(CASE WHEN tipo_motor = 'Hibrido' THEN 1 ELSE 0 END) AS Hibrido, " +
+                "SUM(CASE WHEN tipo_motor = 'Electrico' THEN 1 ELSE 0 END) AS Electrico, " +
+                "SUM(monto_total) AS monto_total " +
+                "FROM " +
+                "reparacion r " +
+                "LEFT JOIN " +
+                "vehiculo v ON r.id_vehiculo = v.id " +
+                "GROUP BY " +
+                "tipo_reparacion " +
+                "ORDER BY " +
+                "MAX(CASE WHEN tipo_motor = 'Gasolina' THEN monto_total ELSE 0 END) + " +
+                "MAX(CASE WHEN tipo_motor = 'Diesel' THEN monto_total ELSE 0 END) + " +
+                "MAX(CASE WHEN tipo_motor = 'Hibrido' THEN monto_total ELSE 0 END) + " +
+                "MAX(CASE WHEN tipo_motor = 'Electrico' THEN monto_total ELSE 0 END) DESC, " +
+                "monto_total DESC;";
+        return jdbcTemplate.queryForList(sqlQuery);
+    }
 }
