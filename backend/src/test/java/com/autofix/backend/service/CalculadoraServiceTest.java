@@ -14,9 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,7 +31,6 @@ public class CalculadoraServiceTest {
     @InjectMocks
     private CalculadoraService calculadoraService;
 
-    private Vehiculo vehiculo;
     private Reparacion reparacion;
 
     @Test
@@ -173,7 +172,7 @@ public class CalculadoraServiceTest {
 // make a test for the method calcularReparacion(Reparacion reparacion)
     @Test
     public void calcularReparacionShouldCalculateCorrectly() {
-        vehiculo = new Vehiculo();
+        Vehiculo vehiculo = new Vehiculo();
         vehiculo.setId(1L);
         vehiculo.setYearFabricacion(10);
         vehiculo.setTipo("Sedan");
@@ -199,11 +198,11 @@ public class CalculadoraServiceTest {
         BigDecimal expectedMontoReparacion = BigDecimal.valueOf(120000);
         BigDecimal expectedDctoNumeroReparaciones = BigDecimal.ZERO;
         BigDecimal expectedRecargoPorAntiguedad = BigDecimal.valueOf(0.05);
-        String expectedRecargoPorRetrasoRecogida = "28500.00";
+        String expectedRecargoPorRetrasoRecogida = "3432000.00";
         BigDecimal expectedDctoPorDiaAtencion = BigDecimal.valueOf(100.0);
         BigDecimal expectedRecargoKilometrajeVehiculo = BigDecimal.valueOf(0.2);
 
-        String expectedMontoFinalReparaciones = "178400.00";
+        String expectedMontoFinalReparaciones = "3581900.00";
 
         assertEquals(expectedMontoFinalReparaciones, reparacion.getMontoTotal().toString());
          assertEquals(expectedDctoNumeroReparaciones, expectedResultsCalculadora.getDctoNumeroReparaciones());
@@ -220,8 +219,177 @@ public class CalculadoraServiceTest {
 
     @Test
     public void calcularReparacionShouldThrowExceptionWhenVehiculoNotFound() {
-        when(vehiculoRepository.findById(vehiculo.getId())).thenReturn(java.util.Optional.empty());
+        Long nonExistentVehiculoId = 1L;
+        when(vehiculoRepository.findById(nonExistentVehiculoId)).thenReturn(java.util.Optional.empty());
+
+        reparacion = new Reparacion();
+        reparacion.setIdVehiculo(nonExistentVehiculoId);
 
         assertThrows(IllegalArgumentException.class, () -> calculadoraService.calcularReparacion(reparacion));
     }
+
+    @Test
+    public void getRecargoAntiguedadVehiculoShouldReturnCorrectValue() {
+        // Arrange
+        int antiguedad = 15;
+        String tipoVehiculo = "SUV";
+        BigDecimal expectedRecargo = BigDecimal.valueOf(0.11);
+
+        // Act
+        BigDecimal actualRecargo = calculadoraService.recargoPorAntiguedad(antiguedad, tipoVehiculo);
+
+        // Assert
+        assertEquals(expectedRecargo, actualRecargo);
+    }
+
+    @Test
+    public void getRecargoAntiguedadVehiculoShouldThrowExceptionForInvalidVehicleType() {
+        // Arrange
+        int antiguedad = 15;
+        String tipoVehiculo = "InvalidType";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> calculadoraService.recargoPorAntiguedad(antiguedad, tipoVehiculo));
+    }
+
+    @Test
+    public void getRecargoKilometrajeVehiculoShouldReturnCorrectValue() {
+        // Arrange
+        int kilometraje = 50000;
+        String tipoVehiculo = "SUV";
+        BigDecimal expectedRecargo = BigDecimal.valueOf(0.20);
+
+        // Act
+        BigDecimal actualRecargo = calculadoraService.recargoKilometrajeVehiculo(kilometraje, tipoVehiculo);
+
+        // Assert
+        assertEquals(expectedRecargo, actualRecargo);
+    }
+
+    @Test
+    public void getRecargoKilometrajeVehiculoShouldThrowExceptionForInvalidVehicleType() {
+        // Arrange
+        int kilometraje = 50000;
+        String tipoVehiculo = "InvalidType";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> calculadoraService.recargoKilometrajeVehiculo(kilometraje, tipoVehiculo));
+    }
+
+
+    @Test
+    public void testDctoNumeroReparaciones() {
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(1L);
+        vehiculo.setTipoMotor("Gasolina");
+        BigDecimal expectedDiscount = BigDecimal.ZERO;
+        assertEquals(expectedDiscount, calculadoraService.dctoNumeroReparaciones(vehiculo));
+    }
+
+    @Test
+    public void testDctoPorDiaAtencion() {
+        // Arrange
+        Reparacion reparacion = new Reparacion();
+        reparacion.setFechaIngreso(LocalDate.of(2023, 1, 2)); // Monday
+        reparacion.setHoraIngreso(LocalTime.of(10, 0)); // Between 9:00 and 12:00
+        reparacion.setMontoTotal(BigDecimal.valueOf(1000)); // Set montoTotal
+        BigDecimal expectedDiscount = BigDecimal.valueOf(100.0);
+        // Act
+        BigDecimal actualDiscount = calculadoraService.dctoPorDiaAtencion(reparacion);
+        // Assert
+        assertEquals(expectedDiscount, actualDiscount);
+    }
+
+    @Test
+    public void testRecargoRetrasoRecogidaVehiculo() {
+        LocalDate fechaEntregaPrevista = LocalDate.of(2023, 1, 1);
+        LocalDate fechaRecogidaReal = LocalDate.of(2023, 1, 3);
+        BigDecimal montoTotalReparacion = BigDecimal.valueOf(100000);
+        String expectedRecargo = "10000.00"; // 5% of montoTotalReparacion per day of delay
+        assertEquals(expectedRecargo, calculadoraService.recargoRetrasoRecogidaVehiculo(fechaEntregaPrevista, fechaRecogidaReal, montoTotalReparacion).toString());
+    }
+
+    @Test
+    public void testCalcularReparacion() {
+        // Arrange
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(1L);
+        vehiculo.setTipo("Sedan"); // Set tipo
+        vehiculo.setTipoMotor("Gasolina"); // Set tipoMotor
+        when(vehiculoRepository.findById(1L)).thenReturn(Optional.of(vehiculo));
+
+        Reparacion reparacion = new Reparacion();
+        reparacion.setIdVehiculo(1L);
+        reparacion.setTipoReparacion("1");
+        reparacion.setFechaIngreso(LocalDate.of(2023, 1, 2)); // Monday
+        reparacion.setHoraIngreso(LocalTime.of(10, 0)); // Between 9:00 and 12:00
+        reparacion.setFechaEntregaCliente(LocalDate.of(2023, 1, 1));
+        reparacion.setMontoTotal(BigDecimal.valueOf(1000)); // Set montoTotal
+
+        // Act
+        CalculoReparacionDTO calculoReparacionDTO = calculadoraService.calcularReparacion(reparacion);
+
+        // Assert
+        assertNotNull(calculoReparacionDTO);
+    }
+
+    @Test
+    public void whenGetPrecioReparacionIsCalled_thenCorrectPriceIsReturned() {
+        // Arrange
+        int id_reparacion = 1;
+        String tipoMotor = "Gasolina";
+        int expectedPrecio = 120000;
+
+        // Act
+        int actualPrecio = calculadoraService.getPrecioReparacion(id_reparacion, tipoMotor);
+
+        // Assert
+        assertEquals(expectedPrecio, actualPrecio);
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_Sedan() {
+        assertEquals(BigDecimal.valueOf(0), calculadoraService.recargoPorAntiguedad(0, "Sedan"));
+        assertEquals(BigDecimal.valueOf(0.05), calculadoraService.recargoPorAntiguedad(7, "Sedan"));
+        assertEquals(BigDecimal.valueOf(0.09), calculadoraService.recargoPorAntiguedad(15, "Sedan"));
+        assertEquals(BigDecimal.valueOf(0.15), calculadoraService.recargoPorAntiguedad(30, "Sedan"));
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_Hatchback() {
+        assertEquals(BigDecimal.valueOf(0), calculadoraService.recargoPorAntiguedad(0, "Hatchback"));
+        assertEquals(BigDecimal.valueOf(0.05), calculadoraService.recargoPorAntiguedad(7, "Hatchback"));
+        assertEquals(BigDecimal.valueOf(0.09), calculadoraService.recargoPorAntiguedad(15, "Hatchback"));
+        assertEquals(BigDecimal.valueOf(0.15), calculadoraService.recargoPorAntiguedad(30, "Hatchback"));
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_SUV() {
+        assertEquals(BigDecimal.valueOf(0), calculadoraService.recargoPorAntiguedad(0, "SUV"));
+        assertEquals(BigDecimal.valueOf(0.07), calculadoraService.recargoPorAntiguedad(7, "SUV"));
+        assertEquals(BigDecimal.valueOf(0.11), calculadoraService.recargoPorAntiguedad(15, "SUV"));
+        assertEquals(BigDecimal.valueOf(0.20), calculadoraService.recargoPorAntiguedad(30, "SUV"));
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_Pickup() {
+        assertEquals(BigDecimal.valueOf(0), calculadoraService.recargoPorAntiguedad(0, "Pickup"));
+        assertEquals(BigDecimal.valueOf(0.07), calculadoraService.recargoPorAntiguedad(7, "Pickup"));
+        assertEquals(BigDecimal.valueOf(0.11), calculadoraService.recargoPorAntiguedad(15, "Pickup"));
+        assertEquals(BigDecimal.valueOf(0.20), calculadoraService.recargoPorAntiguedad(30, "Pickup"));
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_Furgoneta() {
+        assertEquals(BigDecimal.valueOf(0), calculadoraService.recargoPorAntiguedad(0, "Furgoneta"));
+        assertEquals(BigDecimal.valueOf(0.07), calculadoraService.recargoPorAntiguedad(7, "Furgoneta"));
+        assertEquals(BigDecimal.valueOf(0.11), calculadoraService.recargoPorAntiguedad(15, "Furgoneta"));
+        assertEquals(BigDecimal.valueOf(0.20), calculadoraService.recargoPorAntiguedad(30, "Furgoneta"));
+    }
+
+    @Test
+    public void testGetRecargoAntiguedadVehiculo_InvalidType() {
+        assertThrows(IllegalArgumentException.class, () -> calculadoraService.recargoPorAntiguedad(0, "InvalidType"));
+    }
+
 }

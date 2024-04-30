@@ -80,4 +80,28 @@ public class ReportService {
                 "monto_total DESC;";
         return jdbcTemplate.queryForList(sqlQuery);
     }
+
+
+    public List<Map<String, Object>> getReport1Data() {
+        String sqlQuery =
+                "SELECT " +
+                        "v.id AS id_vehiculo, " +
+                        "v.marca, " +
+                        "v.modelo, " +
+                        "v.numero_patente, " +
+                        "crd.monto_total_final, " +
+                        "crd.monto_reparaciones, " +
+                        "crd.dcto_numero_reparaciones, " +
+                        "crd.dcto_por_dia_atencion, " +
+                        "crd.recargo_kilometraje_vehiculo, " +
+                        "crd.recargo_por_antiguedad, " +
+                        "crd.recargo_por_retraso_recogida " +
+                        "FROM " +
+                        "vehiculo v " +
+                        "JOIN " +
+                        "reparacion r ON v.id = r.id_vehiculo " +
+                        "JOIN " +
+                        "calculo_reparaciondto crd ON r.id_reparacion = crd.id_reparacion;";
+        return jdbcTemplate.queryForList(sqlQuery);
+    }
 }

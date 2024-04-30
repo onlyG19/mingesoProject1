@@ -2,6 +2,10 @@ import axios from "axios";
 
 const REPORTES_API_URL = "http://localhost:8080/reportes";
 
+function getDataReporte1(){
+    return axios.get(REPORTES_API_URL+"/1");
+}
+
 function getDataReporte2(){
     return axios.get(REPORTES_API_URL+"/2");
 }
@@ -15,4 +19,4 @@ function getDataReporte4(){
 
 
 
-export default {getDataReporte2, getDataReporte4, getDataReporte3}
+export default {getDataReporte2, getDataReporte4, getDataReporte3, getDataReporte1}

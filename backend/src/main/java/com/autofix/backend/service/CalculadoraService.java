@@ -237,10 +237,6 @@ public class CalculadoraService {
         BigDecimal recargoPorAntiguedad = recargoPorAntiguedad(vehiculo.getYearFabricacion(), vehiculo.getTipo());
         System.out.println("Recargo por antiguedad: %" + recargoPorAntiguedad);
 
-        // TODO Debug el retraso en la recogida del vehiculo, se requiere de un monto total de la reparacion para determinar este recargo
-        BigDecimal recargoPorRetrasoRecogida = recargoRetrasoRecogidaVehiculo(reparacion.getFechaEntregaCliente(), LocalDate.now(), reparacion.getMontoTotal());
-        System.out.println("Recargo por retraso en la recogida: $" + recargoPorRetrasoRecogida);
-
 
         BigDecimal dctoPorDiaAtencion = dctoPorDiaAtencion(reparacion);
         System.out.println("Descuento por dia de atencion: $" + dctoPorDiaAtencion);
@@ -251,6 +247,10 @@ public class CalculadoraService {
 
         BigDecimal montoReparacion = BigDecimal.valueOf(getPrecioReparacion(Integer.parseInt(reparacion.getTipoReparacion()), vehiculo.getTipoMotor()));
         System.out.println("Monto de la reparacion: $" + montoReparacion);
+
+
+        BigDecimal recargoPorRetrasoRecogida = recargoRetrasoRecogidaVehiculo(reparacion.getFechaEntregaCliente(), LocalDate.now(), montoReparacion);
+        System.out.println("Recargo por retraso en la recogida: $" + recargoPorRetrasoRecogida);
 
 
         BigDecimal sumaRecargosPorcentajeTotales = recargoPorAntiguedad.add(recargoKilometrajeVehiculo);

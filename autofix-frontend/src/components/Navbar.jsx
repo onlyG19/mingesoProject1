@@ -35,6 +35,7 @@ const Navbar = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
+                        <MenuItem onClick={handleClose} component={Link} to="/reportes/1">Reporte #1</MenuItem>
                         <MenuItem onClick={handleClose} component={Link} to="/reportes/2"> Reporte #2</MenuItem>
                         <MenuItem onClick={handleClose} component={Link} to="/reportes/3">Reporte #3</MenuItem>
                         <MenuItem onClick={handleClose} component={Link} to="/reportes/4">Reporte #4</MenuItem>

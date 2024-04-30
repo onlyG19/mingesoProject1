@@ -22,10 +22,16 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    @GetMapping("/1")
+    public List<Map<String, Object>> getReport1Data() {
+        return reportService.getReport1Data();
+    }
+
     @GetMapping("/2")
     public List<Map<String, Object>> getReport2Data() {
         return reportService.getReport2Data();
     }
+
     @GetMapping("/3")
     public List<Map<String, Object>> getReport3Data() {
         return reportService.getReport3Data();
