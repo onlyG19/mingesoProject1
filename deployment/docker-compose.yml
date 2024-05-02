@@ -35,6 +35,9 @@ services:
     container_name: postgres-db-container
     image: postgres:latest
     restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - ./data/db:/var/lib/postgresql
     networks:
@@ -50,7 +53,7 @@ services:
       container_name: proyecto_autofix_docker1
       image: byrong/proyecto_autofix_docker
       ports:
-        - "8081:8080"
+        - 8091:8090
       environment:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/autofix?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
         - SPRING_DATASOURCE_USERNAME=postgres
@@ -66,7 +69,7 @@ services:
     container_name: proyecto_autofix_docker2
     image: byrong/proyecto_autofix_docker
     ports:
-      - "8082:8080"
+      - 8092:8090
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/autofix?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -83,7 +86,7 @@ services:
     container_name: proyecto_autofix_docker3
     image: byrong/proyecto_autofix_docker
     ports:
-      - "8083:8080"
+      - 8093:8090
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/autofix?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=postgres
