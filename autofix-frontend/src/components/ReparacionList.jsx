@@ -1,5 +1,5 @@
 import{ useEffect, useState } from 'react';
-import { Paper, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Typography,Paper, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import gestionReparacion from '../services/reparacion.service';
 import { getReparacionNameById} from '../services/listaReparaciones'; // Asegúrate de reemplazar 'ruta/a/listaReparaciones' con la ruta correcta a tu archivo listaReparaciones.js.
 
@@ -25,10 +25,16 @@ export default function ReparacionList(){
 
     return (
         <Grid container direction="column" spacing={2}>
+            <Grid item > 
+                <Typography variant="h2" component="h2" sx={{ marginBottom: '76px',marginTop: '16px' }}>
+                Historial de Reparaciones de Vehículos
+                </Typography>
+            </Grid>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell><b>ID Vehiculo</b></TableCell>
                             <TableCell><b>Fecha Ingreso</b></TableCell>
                             <TableCell><b>Hora Ingreso</b></TableCell>
                             <TableCell><b>Tipo de reparación</b></TableCell>
@@ -42,6 +48,7 @@ export default function ReparacionList(){
                     <TableBody>
                         {reparaciones.map((reparacion) => (
                             <TableRow key={reparacion.id}>
+                                <TableCell>{reparacion.idVehiculo}</TableCell>
                                 <TableCell>{reparacion.fechaIngreso}</TableCell>
                                 <TableCell>{reparacion.horaIngreso}</TableCell>
                                 <TableCell>{getReparacionNameById(parseInt(reparacion.tipoReparacion))}</TableCell>
