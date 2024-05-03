@@ -1,6 +1,7 @@
 package com.autofix.backend.service;
 
 import com.autofix.backend.dto.CalculoReparacionDTO;
+import com.autofix.backend.entities.BonoDcto;
 import com.autofix.backend.entities.Reparacion;
 import com.autofix.backend.repositories.CalculoReparacionDTORepository;
 import com.autofix.backend.repositories.ReparacionRepository;
@@ -43,7 +44,6 @@ public class ReparacionService {
         return reparacionRepository.findAll();
     }
 
-    // create a Reparacion getReparacionById
     public Reparacion getReparacionById(Long reparacionId) {
         return reparacionRepository.findById(reparacionId).orElse(null);
     }

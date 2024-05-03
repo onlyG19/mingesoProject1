@@ -26,11 +26,13 @@ public class CalculoReparacionDTO {
     private BigDecimal recargoKilometrajeVehiculo; // Sobre el costo total, depende del kilometraje
     private BigDecimal montoReparaciones; // Sumatoria de los montos de las reparaciones
     private BigDecimal montoTotalFinal; // Monto  [Suma(Reparaciones) + Recargos – Descuentos] + IVA
+    private BigDecimal descuentoPorBonoDescuento; // Se aplica cuando la reparacion tiene un bono de descuento asignado
+    private BigDecimal iva; // Monto total de la reparacion
 
     @Column(name = "id_reparacion")
     private Long id_reparacion;
 
-    public CalculoReparacionDTO(BigDecimal dctoNumeroReparaciones, BigDecimal recargoPorAntiguedad, BigDecimal recargoPorRetrasoRecogida, BigDecimal dctoPorDiaAtencion, BigDecimal recargoKilometrajeVehiculo, BigDecimal montoReparacion, BigDecimal montoFinalCobro, Long id_reparacion) {
+    public CalculoReparacionDTO(BigDecimal dctoNumeroReparaciones, BigDecimal recargoPorAntiguedad, BigDecimal recargoPorRetrasoRecogida, BigDecimal dctoPorDiaAtencion, BigDecimal recargoKilometrajeVehiculo, BigDecimal montoReparacion, BigDecimal montoFinalCobro, Long id_reparacion, BigDecimal descuentoPorBonoDescuento, BigDecimal iva) {
         this.dctoNumeroReparaciones = dctoNumeroReparaciones;
         this.recargoPorAntiguedad = recargoPorAntiguedad;
         this.recargoPorRetrasoRecogida = recargoPorRetrasoRecogida;
@@ -39,5 +41,7 @@ public class CalculoReparacionDTO {
         this.montoReparaciones = montoReparacion;
         this.montoTotalFinal = montoFinalCobro;
         this.id_reparacion = id_reparacion;
+        this.descuentoPorBonoDescuento = descuentoPorBonoDescuento;
+        this.iva = iva;
     }
 }

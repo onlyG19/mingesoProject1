@@ -1,9 +1,11 @@
 package com.autofix.backend.service;
 
 import com.autofix.backend.dto.CalculoReparacionDTO;
+import com.autofix.backend.entities.BonoDcto;
 import com.autofix.backend.entities.Vehiculo;
 import com.autofix.backend.entities.Reparacion;
 
+import com.autofix.backend.repositories.BonoDctoRepository;
 import com.autofix.backend.repositories.ReparacionRepository;
 import com.autofix.backend.repositories.VehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,63 @@ import java.time.temporal.ChronoUnit;
 public class CalculadoraService {
     VehiculoRepository vehiculoRepository;
     ReparacionRepository reparacionRepository;
+    BonoDctoRepository bonoDctoRepository;
 
     @Autowired
     public CalculadoraService(VehiculoRepository vehiculoRepository,
-                              ReparacionRepository reparacionRepository) {
+                              ReparacionRepository reparacionRepository,
+                              BonoDctoRepository bonoDctoRepository) {
         this.vehiculoRepository = vehiculoRepository;
         this.reparacionRepository = reparacionRepository;
+        this.bonoDctoRepository = bonoDctoRepository;
     }
+
+    // BONOS AUX METHODS
+
+    public void actualizarBonoDcto(Long bonoDctoId) {
+        BonoDcto bonoDcto = bonoDctoRepository.findById(bonoDctoId).orElse(null);
+        if (bonoDcto == null) {
+            throw new IllegalArgumentException("BonoDcto no encontrado");
+        }
+        int numBonos = bonoDcto.getNum_bonos() - 1;
+        if (numBonos == 0) {
+            bonoDctoRepository.delete(bonoDcto);
+        } else {
+            bonoDcto.setNum_bonos(numBonos);
+            bonoDctoRepository.save(bonoDcto);
+        }
+    }
+
+    public boolean validateIfBonoAppliesToVehiculo(Long bonoDctoId, Long vehiculoId) {
+        BonoDcto bonoDcto = bonoDctoRepository.findById(bonoDctoId).orElse(null);
+        Vehiculo vehiculo = vehiculoRepository.findById(vehiculoId).orElse(null);
+        if (bonoDcto == null) {
+            throw new IllegalArgumentException("BonoDcto no encontrado");
+        }
+        if (vehiculo == null) {
+            throw new IllegalArgumentException("Vehiculo no encontrado");
+        }
+        return  bonoDcto.getMarca().equals(vehiculo.getMarca());
+
+
+    }
+
+
+
+    // OBTENER BONOS
+    public BigDecimal descuentoPorBonoDescuento(Reparacion reparacion, Vehiculo vehiculo) {
+
+        BonoDcto bonoDtoToAply = reparacionRepository.getBonoDctoByReparacionId(reparacion.getId_reparacion());
+        if (bonoDtoToAply == null) {
+            return BigDecimal.ZERO;
+        }
+        if (!validateIfBonoAppliesToVehiculo(bonoDtoToAply.getId_bono(), vehiculo.getId())) {
+            return BigDecimal.ZERO;
+        }
+        actualizarBonoDcto(bonoDtoToAply.getId_bono());
+        return BigDecimal.valueOf(bonoDtoToAply.getMonto());
+    }
+
     // Tabla de precios de reparaciones
     private final int[][] matrixPreciosReparaciones = {
             {120000,120000,180000,220000}, // # Reparacion de id 1
@@ -223,6 +275,10 @@ public class CalculadoraService {
         return recargo;
     }
 
+    public BigDecimal recargoIVA(BigDecimal montoReparacion) {
+        return montoReparacion.multiply(BigDecimal.valueOf(0.19));
+    }
+
     // create a method to calculate the total amount of the repair
     public CalculoReparacionDTO calcularReparacion(Reparacion reparacion) {
         Vehiculo vehiculo = vehiculoRepository.findById(reparacion.getIdVehiculo()).orElse(null);
@@ -248,6 +304,20 @@ public class CalculadoraService {
         BigDecimal montoReparacion = BigDecimal.valueOf(getPrecioReparacion(Integer.parseInt(reparacion.getTipoReparacion()), vehiculo.getTipoMotor()));
         System.out.println("Monto de la reparacion: $" + montoReparacion);
 
+        BigDecimal recargoIVAaux =  recargoIVA(montoReparacion);
+        System.out.println("Monto IVA: $" + montoReparacion);
+
+
+        // campo descuento por bono del calculo dto
+        BigDecimal descuentoPorBono;
+        if (reparacion.isAplicaBonoDescuento()) {
+            descuentoPorBono = descuentoPorBonoDescuento(reparacion, vehiculo);
+            System.out.println("Descuento por bono: $" + descuentoPorBono);
+        }else {
+            descuentoPorBono = BigDecimal.ZERO;
+        }
+        System.out.println("Descuento por bono: $" + descuentoPorBono);
+
 
         BigDecimal recargoPorRetrasoRecogida = recargoRetrasoRecogidaVehiculo(reparacion.getFechaEntregaCliente(), LocalDate.now(), montoReparacion);
         System.out.println("Recargo por retraso en la recogida: $" + recargoPorRetrasoRecogida);
@@ -263,13 +333,14 @@ public class CalculadoraService {
          // No se esta contemplando el descuento del bono, TODO: Agregar el descuento del bono
         System.out.println("Suma descuentos totales: % " + sumaDescuentosPorcentajeTotales);
 
-        BigDecimal montoFinalCobro = montoReparacion.add((montoReparacion.multiply(sumaRecargosPorcentajeTotales)).add(recargoPorRetrasoRecogida)).subtract(montoReparacion.multiply(sumaDescuentosPorcentajeTotales).add(dctoPorDiaAtencion));
+        BigDecimal montoFinalCobro = montoReparacion.add((montoReparacion.multiply(sumaRecargosPorcentajeTotales)).add(recargoPorRetrasoRecogida)).subtract(montoReparacion.multiply(sumaDescuentosPorcentajeTotales).add(dctoPorDiaAtencion).add(descuentoPorBono)).add(recargoIVAaux);
         System.out.println("Monto final de cobro: $" + montoFinalCobro);
 
         // now edit the actual reparacion param to set the new value of montofinalcobro has the montoTotal attribute
         reparacion.setMontoTotal(montoFinalCobro);
 
-        return new CalculoReparacionDTO(dctoNumeroReparaciones, recargoPorAntiguedad, recargoPorRetrasoRecogida, dctoPorDiaAtencion, recargoKilometrajeVehiculo, montoReparacion, montoFinalCobro, reparacion.getId_reparacion());
+        // TO DO: ADAPTAR EL RETURN CON IVA Y DCTOBONO
+        return new CalculoReparacionDTO(dctoNumeroReparaciones, recargoPorAntiguedad, recargoPorRetrasoRecogida, dctoPorDiaAtencion, recargoKilometrajeVehiculo, montoReparacion, montoFinalCobro, reparacion.getId_reparacion(), descuentoPorBono, recargoIVAaux);
     }
 
 

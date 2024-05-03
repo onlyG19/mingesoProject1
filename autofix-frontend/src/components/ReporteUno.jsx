@@ -27,7 +27,7 @@ const ReporteUno = () => {
         <Grid container direction="column" spacing={2}>
             <Grid item > 
                 <Typography variant="h2" component="h2" sx={{ marginBottom: '76px',marginTop: '16px' }}>
-                Reporte 1: TODO
+                Reporte 1:  Listado de vehiculo / todos los valores involucrados en el cálculo de la fórmula monto total. 
                 </Typography>
             </Grid>
 

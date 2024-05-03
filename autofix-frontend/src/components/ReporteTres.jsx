@@ -30,7 +30,7 @@ const ReporteTres = () => {
         <Grid container direction="column" spacing={2}>
             <Grid item > 
                 <Typography variant="h2" component="h2" sx={{ marginBottom: '76px',marginTop: '16px' }}>
-                Reporte 3: Tiempo promedio de reparación por marca de vehículo
+                Reporte 3: Tiempo promedio de reparación por marca de vehículo (en días)
                 </Typography>
             </Grid>
 

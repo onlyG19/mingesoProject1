@@ -23,7 +23,6 @@ public class VehiculoService {
         return vehiculoRepository.findAll();
     }
 
-    // create a Vehiculo getVehiculoById
     public Vehiculo getVehiculoById(Long vehiculoId) {
         return vehiculoRepository.findById(vehiculoId).orElse(null);
     }

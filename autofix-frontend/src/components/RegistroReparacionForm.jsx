@@ -12,14 +12,12 @@ export default function RegistroReparacionForm(){
     const [fechaIngreso, setFechaIngreso] = useState('');
     const [horaIngreso, setHoraIngreso] = useState('');
     const [tipoReparacion, setTipoReparacion] = useState('');
-    const [montoTotal, setMontoTotal] = useState('');
     const [fechaSalida, setFechaSalida] = useState('');
     const [horaSalida, setHoraSalida] = useState('');
     const [fechaEntregaCliente, setFechaEntregaCliente] = useState('');
     const [horaEntregaCliente, setHoraEntregaCliente] = useState('');
 
     const [vehiculos, setVehiculos] = useState([]);
-    const [loading, setLoading] = useState(false);
 
 
     async function fetchVehiculosDisponibles(){
@@ -47,13 +45,11 @@ export default function RegistroReparacionForm(){
                 fechaIngreso,
                 horaIngreso,
                 tipoReparacion,
-                montoTotal,
                 fechaSalida,
                 horaSalida,
                 fechaEntregaCliente,
                 horaEntregaCliente,
                 idVehiculo,
-                
             });
             console.log('Respuesta del servidor:', response.data);
 
@@ -61,14 +57,22 @@ export default function RegistroReparacionForm(){
             setFechaIngreso('');
             setHoraIngreso('');
             setTipoReparacion('');
-            setMontoTotal('');
             setFechaSalida('');
             setHoraSalida('');
             setFechaEntregaCliente('');
             setHoraEntregaCliente('');
 
+            let tipoReparacionObj = listaReparaciones.find(reparacion => reparacion.id === tipoReparacion);
+            let nombreTipoReparacion = tipoReparacionObj ? tipoReparacionObj.name : 'No encontrado';
 
-            alert('Reparacion registrado con éxito.');
+            alert(`Reparación registrada con éxito. Detalles:
+            Tipo de Reparación: ${nombreTipoReparacion}
+            Monto Total de la Reparación (incluye recargos y descuentos): $${response.data.montoTotal}
+            Fecha de Salida: ${fechaSalida}
+            Hora de Salida: ${horaSalida}
+            Fecha de Entrega al Cliente: ${fechaEntregaCliente}
+            Hora de Entrega al Cliente: ${horaEntregaCliente}
+            ID del Vehículo en Sistema: ${idVehiculo}`);
 
         } catch (error) {
             console.error('Error al enviar la solicitud:', error);
@@ -76,33 +80,6 @@ export default function RegistroReparacionForm(){
         }
     };
 
-    const handleCalculate = async () => {
-            // Validar los campos necesarios
-        if (!fechaIngreso || !horaIngreso || !tipoReparacion || !fechaSalida || !horaSalida || !fechaEntregaCliente || !horaEntregaCliente || !idVehiculo) {
-            alert('Por favor, complete todos los campos necesarios antes de calcular el monto.');
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Reemplaza esto con la llamada a tu servicio de backend.
-            const response = await gestionReparacion.calcularMonto({
-                fechaIngreso,
-                horaIngreso,
-                tipoReparacion,
-                fechaSalida,
-                horaSalida,
-                fechaEntregaCliente,
-                horaEntregaCliente,
-                idVehiculo,
-            });
-            setMontoTotal(response.data.monto);
-        } catch (error) {
-            console.error('Error al calcular el monto:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <form onSubmit={handleSubmit}>
@@ -122,7 +99,7 @@ export default function RegistroReparacionForm(){
                     >
                         {
                             vehiculos.map((vehiculo) => (
-                                <MenuItem key={vehiculo.id} value={vehiculo.id}><b>Marca: </b> {vehiculo.marca} ,   <b>Modelo: </b>{vehiculo.modelo} ,  <b>Patente: </b> {vehiculo.numeroPatente} </MenuItem>
+                                <MenuItem key={vehiculo.id} value={vehiculo.id}><b>Marca: &nbsp; </b> {vehiculo.marca}  &nbsp; <b> Modelo: &nbsp;</b>{vehiculo.modelo} &nbsp;<b>Patente: &nbsp;</b> {vehiculo.numeroPatente} </MenuItem>
                             ))
                         }
                     </Select>
@@ -190,24 +167,8 @@ export default function RegistroReparacionForm(){
                     </FormControl>
                 </Grid>
 
-                <Grid item>
-                    <FormControl fullWidth>
-                        
-                        <TextField
-                            required
-                            id="montoTotal"
-                            label="Monto Total"
-                            type="number"
-                            value={montoTotal}
-                            onChange={(e) => setMontoTotal(e.target.value)}
-                            disabled
-                        />
-                        <Button variant="contained" onClick={handleCalculate} disabled={loading}>
-                            Calcular Monto
-                        </Button>
+                
 
-                    </FormControl>
-                </Grid>
 
                 <Grid item>
                     <FormControl fullWidth>

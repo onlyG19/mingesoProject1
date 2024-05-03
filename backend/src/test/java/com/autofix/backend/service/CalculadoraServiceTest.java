@@ -198,11 +198,11 @@ public class CalculadoraServiceTest {
         BigDecimal expectedMontoReparacion = BigDecimal.valueOf(120000);
         BigDecimal expectedDctoNumeroReparaciones = BigDecimal.ZERO;
         BigDecimal expectedRecargoPorAntiguedad = BigDecimal.valueOf(0.05);
-        String expectedRecargoPorRetrasoRecogida = "3444000.00";
+        String expectedRecargoPorRetrasoRecogida = "3450000.00";
         BigDecimal expectedDctoPorDiaAtencion = BigDecimal.valueOf(100.0);
         BigDecimal expectedRecargoKilometrajeVehiculo = BigDecimal.valueOf(0.2);
 
-        String expectedMontoFinalReparaciones = "3593900.00";
+        String expectedMontoFinalReparaciones = "3622700.00";
 
         assertEquals(expectedMontoFinalReparaciones, reparacion.getMontoTotal().toString());
         assertEquals(expectedDctoNumeroReparaciones, expectedResultsCalculadora.getDctoNumeroReparaciones());

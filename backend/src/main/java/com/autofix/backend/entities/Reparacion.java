@@ -28,6 +28,7 @@ public class Reparacion {
     private LocalTime horaSalida;
     private LocalDate fechaEntregaCliente;
     private LocalTime horaEntregaCliente;
+    private boolean aplicaBonoDescuento;
 
     @Column(name = "id_vehiculo")
     private Long idVehiculo;
