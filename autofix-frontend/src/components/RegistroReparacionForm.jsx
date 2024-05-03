@@ -241,7 +241,7 @@ export default function RegistroReparacionForm(){
                 </Grid>
 
                 <Grid item>
-                    <Button type="submit" variant="contained" color="primary">Registrar reparacion</Button>
+                    <Button type="submit" variant="contained" color="primary">Grabar reparacion</Button>
                 </Grid>
             </Grid>
         </form>
