@@ -1,8 +1,10 @@
 package com.autofix.backend.service;
 
 import com.autofix.backend.dto.CalculoReparacionDTO;
+import com.autofix.backend.entities.BonoDcto;
 import com.autofix.backend.entities.Reparacion;
 import com.autofix.backend.entities.Vehiculo;
+import com.autofix.backend.repositories.BonoDctoRepository;
 import com.autofix.backend.repositories.ReparacionRepository;
 import com.autofix.backend.repositories.VehiculoRepository;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CalculadoraServiceTest {
@@ -27,6 +29,9 @@ public class CalculadoraServiceTest {
 
     @Mock
     private VehiculoRepository vehiculoRepository;
+
+    @Mock
+    private BonoDctoRepository bonoDctoRepository;
 
     @InjectMocks
     private CalculadoraService calculadoraService;
@@ -390,6 +395,77 @@ public class CalculadoraServiceTest {
     @Test
     public void testGetRecargoAntiguedadVehiculo_InvalidType() {
         assertThrows(IllegalArgumentException.class, () -> calculadoraService.recargoPorAntiguedad(0, "InvalidType"));
+    }
+
+    @Test
+    public void testActualizarBonoDcto() {
+        // Arrange
+        Long bonoDctoId = 1L;
+        BonoDcto bonoDcto = new BonoDcto();
+        bonoDcto.setId_bono(bonoDctoId);
+        bonoDcto.setNum_bonos(5);
+        when(bonoDctoRepository.findById(bonoDctoId)).thenReturn(Optional.of(bonoDcto));
+
+        // Act
+        calculadoraService.actualizarBonoDcto(bonoDctoId);
+
+        // Assert
+        verify(bonoDctoRepository, times(1)).save(any(BonoDcto.class));
+    }
+
+    @Test
+    public void testValidateIfBonoAppliesToVehiculo() {
+        // Arrange
+        Long bonoDctoId = 1L;
+        Long vehiculoId = 1L;
+        BonoDcto bonoDcto = new BonoDcto();
+        bonoDcto.setId_bono(bonoDctoId);
+        bonoDcto.setMarca("Toyota");
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(vehiculoId);
+        vehiculo.setMarca("Toyota");
+        when(bonoDctoRepository.findById(bonoDctoId)).thenReturn(Optional.of(bonoDcto));
+        when(vehiculoRepository.findById(vehiculoId)).thenReturn(Optional.of(vehiculo));
+
+        // Act
+        boolean result = calculadoraService.validateIfBonoAppliesToVehiculo(bonoDctoId, vehiculoId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    public void testDescuentoPorBonoDescuento() {
+        // Arrange
+        Reparacion reparacion = new Reparacion();
+        reparacion.setId_reparacion(1L);
+        Vehiculo vehiculo = new Vehiculo();
+        vehiculo.setId(1L);
+        BonoDcto bonoDcto = new BonoDcto();
+        bonoDcto.setId_bono(1L);
+        bonoDcto.setMonto(100);
+        bonoDcto.setMarca("Toyota"); // Ensure BonoDcto has a non-null marca attribute
+        when(reparacionRepository.getBonoDctoByReparacionId(reparacion.getId_reparacion())).thenReturn(bonoDcto);
+        when(vehiculoRepository.findById(vehiculo.getId())).thenReturn(Optional.of(vehiculo));
+        when(bonoDctoRepository.findById(bonoDcto.getId_bono())).thenReturn(Optional.of(bonoDcto)); // Ensure BonoDcto exists in the repository
+
+        // Act
+        BigDecimal result = calculadoraService.descuentoPorBonoDescuento(reparacion, vehiculo);
+
+        // Assert
+        assertEquals(BigDecimal.ZERO, result);
+    }
+
+    @Test
+    public void testRecargoIVA() {
+        // Arrange
+        BigDecimal montoReparacion = BigDecimal.valueOf(1000);
+
+        // Act
+        BigDecimal result = calculadoraService.recargoIVA(montoReparacion);
+
+        // Assert
+        assertEquals("190.00", result.toString());
     }
 
 }
