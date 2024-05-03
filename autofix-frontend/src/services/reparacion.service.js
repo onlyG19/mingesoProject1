@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const REPARACION_API_URL = "http://localhost:8080/reparaciones";
+const REPARACION_API_URL = "http://autofix-app.eastus.cloudapp.azure.com/reparaciones";
 
 function crearReparacion(reparacion){
     return axios.post(REPARACION_API_URL, reparacion)

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const REPORTES_API_URL = "http://localhost:8080/reportes";
+const REPORTES_API_URL = "http://autofix-app.eastus.cloudapp.azure.com/reportes";
 
 function getDataReporte1(){
     return axios.get(REPORTES_API_URL+"/1");

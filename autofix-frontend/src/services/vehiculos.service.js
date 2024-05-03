@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const VEHICULO_API_URL = "http://localhost:8080/vehiculos";
+const VEHICULO_API_URL = "http://autofix-app.eastus.cloudapp.azure.com/vehiculos";
 
 function crearVehiculo(vehiculo){
     return axios.post(VEHICULO_API_URL, vehiculo)
