@@ -12,6 +12,7 @@ export default function RegistroVehiculoForm(){
   const [yearFabricacion, setAnio] = useState('');
   const [tipoMotor, setTipoMotor] = useState('');
   const [numeroAsientos, setNumAsientos] = useState('');
+  const [kilometraje, setKilometraje] = useState('');	
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +24,8 @@ export default function RegistroVehiculoForm(){
         tipo,
         yearFabricacion,
         tipoMotor,
-        numeroAsientos
+        numeroAsientos,
+        kilometraje
       });
       console.log('Respuesta del servidor:', response.data);
       
@@ -36,6 +38,7 @@ export default function RegistroVehiculoForm(){
         setAnio('');
         setTipoMotor('');
         setNumAsientos('');
+        setKilometraje('');
 
         alert('Vehículo registrado con éxito.');
 
@@ -157,6 +160,20 @@ export default function RegistroVehiculoForm(){
                 label="Número de asientos"
                 value={numeroAsientos}
                 onChange={(e) => setNumAsientos(e.target.value)}
+                type="number"
+                required
+            />
+          </FormControl>
+
+        </Grid>
+
+        <Grid item>
+          <FormControl fullWidth>
+
+            <TextField
+                label="Kilometraje"
+                value={kilometraje}
+                onChange={(e) => setKilometraje(e.target.value)}
                 type="number"
                 required
             />
